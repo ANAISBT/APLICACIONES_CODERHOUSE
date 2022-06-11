@@ -1,15 +1,13 @@
-import { Button, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {List, Modal} from './src/components/index';
 import React, {useState} from 'react';
 
 import { HORIZONTAL } from 'react-native/Libraries/Components/ScrollView/ScrollViewContext';
 import { themes } from './src/contantes/themes/index';
 
 //useState está dentro de react por eso en llavaes, en cambio React es una clase por eso va sin llaves
-
 // el StyleSheet: permite crear un objeto de estilos en formato JSON, el cual lo usaremos en nuestro componenete
-
 //import { StatusBar } from 'expo-status-bar';
-
 export default function App() {
   const[task, setTask]=useState("");
   const[tasks, setTasks]=useState([]);//lista donde estará los tasks
@@ -22,6 +20,7 @@ const onHandleInput = (text) =>{
 };
 
 const onHandleSubmit = () =>{
+  console.log('Se presionó el botón ADD')
   setTasks(currentTasks => [//currentTasks: callback, estado actual  del tasks
     ...currentTasks,
     { id:Math.random(),value:task}
@@ -40,24 +39,6 @@ setItemSelected(tasks.filter(item=>item.id == id)[0]);//filter:busca el item sea
 setModalVisible(!modalVisible);//(!)modalVisible:inversa de true
 }; 
 
-const renderItem=({item})=>{
-  return(
-    <View key={`task-${item.id}`} style={styles.containerItem}> 
-        {/* key es el id unico de cada task de la lista */}
-          {/* idx:posición */}
-            <Text style={styles.item}>{item.value}</Text>
-            <TouchableOpacity style={styles.deleteButton} onPress={()=>onHandleModal(item.id)}>
-            <Text style={styles.deleteButtonText}>X</Text>
-            </TouchableOpacity>
-        </View>
-  )
-}
-
-const ListHeaderComponent = ()=> {
-  return(
-    tasks.length>0 && <Text style={styles.tittleList}>Task List</Text>
-  )
-}
 //console.warn({tasks}); //para poder visulizar la consola
   return (
     <View style={themes.container}>
@@ -75,13 +56,12 @@ const ListHeaderComponent = ()=> {
       disabled={task.length==0}//el boton se activa cuando escribes algo en el textinput
       />
     </View>
-    <FlatList 
-    ListHeaderComponent={ListHeaderComponent}//Cabezera
-    data={tasks}
-    renderItem={renderItem}
-    keyExtractor={(item)=> item.id.toString()}
-    style={styles.containerList}
+
+    <List
+    tasks={tasks} 
+    onPressItem={onHandleModal}
     />
+
     <Modal
       animationType="slide"
       visible={modalVisible}
@@ -124,9 +104,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#212121",
   },
-  containerList:{
-    margin: 25,
-  },
+  
   containerItem:{
     marginVertical:10,
     flexDirection: 'row',
@@ -136,12 +114,6 @@ const styles = StyleSheet.create({
   item:{
     fontSize: 14,
     color: "#212121", 
-  },
-  tittleList:{
-    marginTop:10,
-    fontSize: 18,
-    color: "#212121",
-    fontweight:"bold",
   },
   deleteButton:{
     backgroundColor: "#8CBCB9",
